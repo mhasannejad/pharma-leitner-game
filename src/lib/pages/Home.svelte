@@ -8,6 +8,8 @@
 
     let levels = []
     let pharma_to_remember = {}
+    let blur = true
+    let props_blur_holder = []
 
     onMount(() => {
         getPharmaToRemember(0)
@@ -39,7 +41,23 @@
             })
         }).then(r => {
             pharma_to_remember = r.data
+            pharma_to_remember.props.forEach(prop => {
+                props_blur_holder = [...props_blur_holder, {
+                    blurred: true,
+                    id: prop.id
+                }]
+            })
+
+
         })
+
+
+    }
+    const un_blurred_prop = (index) => {
+
+        props_blur_holder[index] = {
+            id:props_blur_holder[index].id, blurred: false
+        }
     }
     const upgradeCard = (pharma, remembered) => {
         axios({
@@ -80,7 +98,8 @@
                     <h3 class="">{pharma_to_remember.name}</h3>
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">{pharma_to_remember.group}</h5>
+                    <h5 class="card-title" on:click={()=>{blur=false}}
+                        class:blur-property={blur}>{pharma_to_remember.group}</h5>
 
                     <div class="btn-group w-100 my-3" role="group" aria-label="Basic example">
                         <button type="button" class="btn btn-danger"
@@ -103,7 +122,10 @@
                                     </h2>
                                     <div id="collapse{index}" class="accordion-collapse collapse show"
                                          aria-labelledby="heading{index}" data-bs-parent="#accordionExample">
-                                        <div class="accordion-body">
+                                        <div class="accordion-body "
+                                             class:blur-property={props_blur_holder[index].blurred} on:click={()=>{
+                                                 un_blurred_prop(index)
+                                             }}>
                                             {prop.value}
                                         </div>
                                     </div>
