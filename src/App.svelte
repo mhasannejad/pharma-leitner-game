@@ -17,18 +17,22 @@
             on:click={closeModal}
     ></div>
 </Modals>
-<Navbar />
+<Navbar/>
 
-{#if $userD.token}<Home />{:else}
-    <div class="row">
-        <div class="col-md-3"></div>
-        <div class="col-md-3 col-sm-12">
-            <RegisterWidget />
+{#if $userD.token}
+    <Home/>
+{:else}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-3"></div>
+            <div class="col-lg-3 col-md-6 col-sm-12">
+                <RegisterWidget/>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-12">
+                <LoginWidget/>
+            </div>
+            <div class="col-lg-3"></div>
         </div>
-        <div class="col-md-3 col-sm-12">
-            <LoginWidget />
-        </div>
-        <div class="col-md-3"></div>
     </div>
 {/if}
 
