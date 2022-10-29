@@ -4,6 +4,9 @@
     import {closeModal, Modals} from "svelte-modals";
     import Navbar from "./lib/widgets/Navbar.svelte";
     import Home from "./lib/pages/Home.svelte";
+    import {userD} from "./utils/auth.js";
+    import RegisterWidget from "./lib/modals/RegisterWidget.svelte";
+    import LoginWidget from "./lib/modals/LoginWidget.svelte";
 
 </script>
 <SvelteToast/>
@@ -16,7 +19,18 @@
 </Modals>
 <Navbar />
 
-<Home />
+{#if $userD.token}<Home />{:else}
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-3 col-sm-12">
+            <RegisterWidget />
+        </div>
+        <div class="col-md-3 col-sm-12">
+            <LoginWidget />
+        </div>
+        <div class="col-md-3"></div>
+    </div>
+{/if}
 
 <style>
     .backdrop {
