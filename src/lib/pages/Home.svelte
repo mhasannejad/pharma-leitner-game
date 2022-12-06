@@ -41,12 +41,15 @@
             })
         }).then(r => {
             pharma_to_remember = r.data
+            props_blur_holder = []
             pharma_to_remember.props.forEach(prop => {
+
                 props_blur_holder = [...props_blur_holder, {
                     blurred: true,
                     id: prop.id
                 }]
             })
+            console.log(props_blur_holder)
 
 
         })
@@ -58,6 +61,7 @@
         props_blur_holder[index] = {
             id:props_blur_holder[index].id, blurred: false
         }
+        console.log(props_blur_holder)
     }
     const upgradeCard = (pharma, remembered) => {
         axios({
