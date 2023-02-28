@@ -8,8 +8,25 @@
 
     let levels = []
     let pharma_to_remember = {}
+    let main_pharma = {}
     let blur = true
     let props_blur_holder = []
+    let refrence = {
+        "clinicalAttentions": "نکات بالینی",
+        "pregnancyCategory": "دسته مصرت در حاملگی",
+        "tradeNames": "نام های تجاری",
+        "contraindications": "کنترایندیکیشن",
+        "pregnancy": "حاملگی",
+        "treatmentCategory": "دسته درمانی",
+        "iranianGenericProducts": "محصولات ژنریک ایرانی",
+        "indications": "اندیکاسیون",
+        "pharmacoDynamics": "فارماکودینامیک",
+        "interactions": "تداخلات",
+        "sideEffects": "عوارض",
+        "breastFeeding": "در شیردهی",
+        "trainings": "آموزشات لازم"
+    }
+
 
     onMount(() => {
         getPharmaToRemember(0)
@@ -18,7 +35,7 @@
 
     const getMyLevels = () => {
         axios({
-            url: `${baseUrl}leitner/card/mine/`,
+            url: `${baseUrl}leitner/flashcard/mine/`,
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -31,7 +48,7 @@
 
     const getPharmaToRemember = (level) => {
         axios({
-            url: `${baseUrl}leitner/pharma/random/`,
+            url: `${baseUrl}leitner/daroo/random/`,
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -40,15 +57,32 @@
                 level: level
             })
         }).then(r => {
+            console.log(r.data)
             pharma_to_remember = r.data
+            main_pharma = {...r.data}
+            delete pharma_to_remember.id
+            delete pharma_to_remember.name
+            delete pharma_to_remember.pharmacologyCategory
+            console.log(main_pharma)
+            console.log(pharma_to_remember)
             props_blur_holder = []
-            pharma_to_remember.props.forEach(prop => {
-
+            let index_ph = 0
+            for (let [key, value] of Object.entries(pharma_to_remember)) {
+                console.log(key)
+                console.log(value)
                 props_blur_holder = [...props_blur_holder, {
                     blurred: true,
-                    id: prop.id
+                    id: index_ph
                 }]
-            })
+                index_ph += 1
+            }
+            // pharma_to_remember.props.forEach(prop => {
+            //
+            //     props_blur_holder = [...props_blur_holder, {
+            //         blurred: true,
+            //         id: prop.id
+            //     }]
+            // })
             console.log(props_blur_holder)
 
 
@@ -59,13 +93,13 @@
     const un_blurred_prop = (index) => {
 
         props_blur_holder[index] = {
-            id:props_blur_holder[index].id, blurred: false
+            id: props_blur_holder[index].id, blurred: false
         }
         console.log(props_blur_holder)
     }
     const upgradeCard = (pharma, remembered) => {
         axios({
-            url: `${baseUrl}leitner/card/upgrade/`,
+            url: `${baseUrl}leitner/flashcard/upgrade/`,
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -83,10 +117,44 @@
 
         })
     }
+    function setBlock(block) {
+        axios({
+            url: `${baseUrl}leitner/block/set/priority/`,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + $userD.token
+            },
+            data: JSON.stringify({
+                block_priority: block,
+            })
+        }).then(r => {
+            if (r.status === 200) {
+                $userD = r.data
+            }
+
+        })
+    }
+    function isJsonString(str) {
+        try {
+            JSON.parse(str);
+        } catch (e) {
+            return false;
+        }
+        return true;
+    }
 </script>
 
 
 <div class="container">
+    <h4>set your block priority</h4>
+    <div class="w-100 d-flex justify-content-between">
+        {#each [1,2,3,4] as block}
+            <button on:click={()=>{setBlock(block)}} class="{$userD.block_priority===block?'active-block-button':''} m-1" style="width: 22%">
+                block {block}
+            </button>
+        {/each}
+    </div>
     <div class="d-flex justify-content-start w-100 mx-4 my-4">
         {#each levels as level}
             <button class="mx-2" on:click={()=>{
@@ -99,29 +167,29 @@
         <div class="w-75 justify-content-center h-100">
             <div class="card" style="">
                 <div class="card-header">
-                    <h3 class="">{pharma_to_remember.name}</h3>
+                    <h3 class="">{main_pharma.name}</h3>
                 </div>
                 <div class="card-body">
                     <h5 class="card-title" on:click={()=>{blur=false}}
-                        class:blur-property={blur}>{pharma_to_remember.group}</h5>
+                        class:blur-property={blur}>{isJsonString(main_pharma.pharmacologyCategory)?JSON.parse(main_pharma.pharmacologyCategory):main_pharma.pharmacologyCategory}</h5>
 
                     <div class="btn-group w-100 my-3" role="group" aria-label="Basic example">
                         <button type="button" class="btn btn-danger"
-                                on:click={()=>{upgradeCard(pharma_to_remember.id,false)}}>WTF is This
+                                on:click={()=>{upgradeCard(main_pharma.id,false)}}>i can't remember this
                         </button>
                         <button type="button" class="btn btn-success"
-                                on:click={()=>{upgradeCard(pharma_to_remember.id,true)}}>i remember this
+                                on:click={()=>{upgradeCard(main_pharma.id,true)}}>i remember this
                         </button>
                     </div>
                     <div class="accordion my-3 bg-dark" id="accordionExample" style="direction: rtl !important">
-                        {#if pharma_to_remember.props}
-                            {#each pharma_to_remember.props as prop,index}
+                        {#if pharma_to_remember}
+                            {#each Object.entries(pharma_to_remember) as [key, value],index}
                                 <div class="accordion-item">
                                     <h2 class="accordion-header" id="heading{index}">
                                         <button class="accordion-button" type="button" data-bs-toggle="collapse"
                                                 data-bs-target="#collapse{index}" aria-expanded="true"
                                                 aria-controls="collapse{index}">
-                                            {prop.key}
+                                            {refrence[key]}
                                         </button>
                                     </h2>
                                     <div id="collapse{index}" class="accordion-collapse collapse show"
@@ -130,7 +198,38 @@
                                              class:blur-property={props_blur_holder[index].blurred} on:click={()=>{
                                                  un_blurred_prop(index)
                                              }}>
-                                            {prop.value}
+                                            {#if isJsonString(value)}
+                                                {#if Array.isArray(JSON.parse(value))}
+                                                    <ul>
+                                                        {#each JSON.parse(value) as item_}
+                                                            <li>{item_}</li>
+                                                        {/each}
+                                                    </ul>
+                                                {:else}
+                                                    {#each Object.entries(JSON.parse(value)) as [k,v],ind}
+                                                        <h3>{k}</h3>
+                                                        {#if isJsonString(v)}
+                                                            {#if Array.isArray(JSON.parse(v))}
+                                                                <ul>
+                                                                    {#each JSON.parse(v) as item_2}
+                                                                        <li>{item_2}</li>
+                                                                    {/each}
+                                                                </ul>
+                                                            {:else}
+                                                                {#each Object.entries(JSON.parse(value)) as [k,v],ind}
+                                                                    <h4>{k}</h4>
+                                                                    <p>{v}</p>
+                                                                {/each}
+                                                            {/if}
+                                                        {:else}
+                                                            <p>{v}</p>
+                                                        {/if}
+                                                    {/each}
+                                                {/if}
+
+                                            {:else}
+                                                {value}
+                                            {/if}
                                         </div>
                                     </div>
                                 </div>

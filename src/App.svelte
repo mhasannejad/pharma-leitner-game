@@ -7,6 +7,8 @@
     import {userD} from "./utils/auth.js";
     import RegisterWidget from "./lib/modals/RegisterWidget.svelte";
     import LoginWidget from "./lib/modals/LoginWidget.svelte";
+    import {Route, Router} from "svelte-navigator";
+    import LeaderBoard from "./lib/pages/LeaderBoard.svelte";
 
 </script>
 <SvelteToast/>
@@ -17,24 +19,33 @@
             on:click={closeModal}
     ></div>
 </Modals>
-<Navbar/>
 
-{#if $userD.token}
-    <Home/>
-{:else}
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-3"></div>
-            <div class="col-lg-3 col-md-6 col-sm-12">
-                <RegisterWidget/>
+
+<Router>
+    <Navbar/>
+
+    <Route primary={true} path="/">
+        {#if $userD.token}
+            <Home/>
+        {:else}
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-3"></div>
+                    <div class="col-lg-3 col-md-6 col-sm-12">
+                        <RegisterWidget/>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-12">
+                        <LoginWidget/>
+                    </div>
+                    <div class="col-lg-3"></div>
+                </div>
             </div>
-            <div class="col-lg-3 col-md-6 col-sm-12">
-                <LoginWidget/>
-            </div>
-            <div class="col-lg-3"></div>
-        </div>
-    </div>
-{/if}
+        {/if}
+    </Route>
+    <Route path="leaderboard" primary={false}>
+        <LeaderBoard />
+    </Route>
+</Router>
 
 <style>
     .backdrop {

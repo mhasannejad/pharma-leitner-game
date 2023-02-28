@@ -133,3 +133,7 @@ label {
     filter: blur(10px);
     cursor: pointer;
 }
+.active-block-button{
+    border-color: deepskyblue;
+    border-width: 1px;
+}
