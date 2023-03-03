@@ -24,7 +24,8 @@
         "interactions": "تداخلات",
         "sideEffects": "عوارض",
         "breastFeeding": "در شیردهی",
-        "trainings": "آموزشات لازم"
+        "trainings": "آموزشات لازم",
+        'block_combined': "در این بلاک ها هست"
     }
 
 
@@ -117,6 +118,7 @@
 
         })
     }
+
     function setBlock(block) {
         axios({
             url: `${baseUrl}leitner/block/set/priority/`,
@@ -135,10 +137,14 @@
 
         })
     }
+
     function isJsonString(str) {
         try {
+            console.log('type of ff'+typeof str)
             JSON.parse(str);
         } catch (e) {
+            console.log(str)
+            console.log(e)
             return false;
         }
         return true;
@@ -149,8 +155,9 @@
 <div class="container">
     <h4>set your block priority</h4>
     <div class="w-100 d-flex justify-content-between">
-        {#each [1,2,3,4] as block}
-            <button on:click={()=>{setBlock(block)}} class="{$userD.block_priority===block?'active-block-button':''} m-1" style="width: 22%">
+        {#each [1, 2, 3, 4] as block}
+            <button on:click={()=>{setBlock(block)}}
+                    class="{$userD.block_priority===block?'active-block-button':''} m-1" style="width: 22%">
                 block {block}
             </button>
         {/each}
@@ -171,7 +178,7 @@
                 </div>
                 <div class="card-body">
                     <h5 class="card-title" on:click={()=>{blur=false}}
-                        class:blur-property={blur}>{isJsonString(main_pharma.pharmacologyCategory)?JSON.parse(main_pharma.pharmacologyCategory):main_pharma.pharmacologyCategory}</h5>
+                        class:blur-property={blur}>{isJsonString(main_pharma.pharmacologyCategory) ? JSON.parse(main_pharma.pharmacologyCategory) : main_pharma.pharmacologyCategory}</h5>
 
                     <div class="btn-group w-100 my-3" role="group" aria-label="Basic example">
                         <button type="button" class="btn btn-danger"
@@ -198,7 +205,7 @@
                                              class:blur-property={props_blur_holder[index].blurred} on:click={()=>{
                                                  un_blurred_prop(index)
                                              }}>
-                                            {#if isJsonString(value)}
+                                            {#if isJsonString(value) && value != null}
                                                 {#if Array.isArray(JSON.parse(value))}
                                                     <ul>
                                                         {#each JSON.parse(value) as item_}
@@ -206,29 +213,44 @@
                                                         {/each}
                                                     </ul>
                                                 {:else}
-                                                    {#each Object.entries(JSON.parse(value)) as [k,v],ind}
-                                                        <h3>{k}</h3>
-                                                        {#if isJsonString(v)}
-                                                            {#if Array.isArray(JSON.parse(v))}
+                                                    {#each Object.entries(JSON.parse(value)||{}) as [k1, v1],ind}
+                                                        <h3> &ensp {k1}</h3>
+                                                        {#if isJsonString(JSON.stringify(v1))}
+                                                            {#if Array.isArray(v1)}
                                                                 <ul>
-                                                                    {#each JSON.parse(v) as item_2}
-                                                                        <li>{item_2}</li>
+                                                                    {#each v1 as item_2}
+                                                                        <li> &ensp{item_2}</li>
                                                                     {/each}
                                                                 </ul>
                                                             {:else}
-                                                                {#each Object.entries(JSON.parse(value)) as [k,v],ind}
-                                                                    <h4>{k}</h4>
-                                                                    <p>{v}</p>
+                                                                {#each Object.entries(v1) as [k2, v2],ind}
+                                                                    <h4> &ensp  &ensp {k2}</h4>
+                                                                    {#if isJsonString(JSON.stringify(v2))}
+                                                                        {#if Array.isArray(v2)}
+                                                                            <ul>
+                                                                                {#each v2 as item_2}
+                                                                                    <li>  &ensp  &ensp {item_2}</li>
+                                                                                {/each}
+                                                                            </ul>
+                                                                        {:else}
+                                                                            {#each Object.entries(v2) as [k3, v3],ind}
+                                                                                <h5> &ensp  &ensp  &ensp {k3}</h5>
+                                                                                <p> &ensp  &ensp  &ensp{v3}</p>
+                                                                            {/each}
+                                                                        {/if}
+                                                                    {:else}
+                                                                        <p> &ensp  &ensp{v2}</p>
+                                                                    {/if}
                                                                 {/each}
                                                             {/if}
                                                         {:else}
-                                                            <p>{v}</p>
+                                                            <p> &ensp  &ensp{v1}</p>
                                                         {/if}
                                                     {/each}
                                                 {/if}
 
                                             {:else}
-                                                {value}
+                                                &ensp {value}
                                             {/if}
                                         </div>
                                     </div>
