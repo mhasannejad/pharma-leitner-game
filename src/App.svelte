@@ -9,7 +9,10 @@
     import LoginWidget from "./lib/modals/LoginWidget.svelte";
     import {Route, Router} from "svelte-navigator";
     import LeaderBoard from "./lib/pages/LeaderBoard.svelte";
-
+    import {onMount} from "svelte";
+    onMount(()=>{
+        console.log($userD.token)
+    })
 </script>
 <SvelteToast/>
 <Modals>
@@ -25,7 +28,7 @@
     <Navbar/>
 
     <Route primary={true} path="/">
-        {#if $userD.token}
+        {#if true}
             <Home/>
         {:else}
             <div class="container-fluid">

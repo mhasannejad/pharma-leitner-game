@@ -20,7 +20,7 @@
     "bootstrap": "^5.2.2",
     "svelte-json-tree": "^1.0.0",
     "svelte-local-storage-store": "^0.3.1",
-    "svelte-modals": "^1.2.0",
+    "svelte-modals": "^1.2.1",
     "svelte-navigator": "^3.2.2",
     "svelte-typeahead": "^4.3.2",
     "sveltestrap": "^5.9.0"
